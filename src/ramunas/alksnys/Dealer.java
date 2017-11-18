@@ -12,6 +12,9 @@ public class Dealer {
 	private Scanner userInput = new Scanner(System.in);
 	private CardLog newInstance = CardLog.getInstance();
 	private List<Player> players;
+	private boolean doDealCards = false;
+	private boolean status = false;
+	private int dealerPoints = 0;
 
 	public Dealer(String name) {
 		this.name = name;
@@ -21,12 +24,59 @@ public class Dealer {
 	}
 
 	public void startGame() {
-		while (checkGameConditions()) {
-			playersRegistration();
+		playersRegistration();
+		while (true) {
 			dealCards();
-			// showPlayersStats();
-			break;
+			findTheWinners();
+			System.out.println("Jei norite zaisti dar karta press Y, jei baigti Q");
+			String answer = userInput.next();
+			if (answer.equalsIgnoreCase("Y")) {
+				newInstance.prepareNewCards();
+				resetDealer();
+				resetPlayers();
+				continue;
+			} else {
+				break;
+			}
 		}
+	}
+
+	private void resetPlayers() {
+		for (Player player : players) {
+			player.resetPlayer();
+		}
+
+	}
+
+	private void resetDealer() {
+		dealerPoints = 0;
+		status = false;
+		cards.clear();
+		addNullsToDealerCards();
+
+	}
+
+	private void findTheWinners() {
+		if (status) {
+			for (Player player : players) {
+				if (!player.getStatus()) {
+					System.out.println("Player " + player.getName() + " laimejo");
+				}
+			}
+		} else {
+			for (Player player : players) {
+				if (!player.getStatus() && player.getPoints() > dealerPoints) {
+					System.out.println("Player " + player.getName() + "turi " + player.getPoints()
+							+ "surinko daugiau negu dealeris ir laimejo");
+				} else if (!player.getStatus() && player.getPoints() == dealerPoints) {
+					System.out.println("Player " + player.getName() + " turi vienodai su dealeriu");
+				} else if (!player.getStatus()) {
+					System.out.println("Player " + player.getName() + " turi tasku: " + player.getPoints()
+							+ " dealeris turi: " + dealerPoints + " ,todel pralaimejo, dealeris surinko daugiau tasku");
+				}
+			}
+		}
+
 	}
 
 	private void dealCards() {
@@ -74,6 +124,7 @@ public class Dealer {
 								players.get(i).setPoints(
 										(new DealerBrains()).calculatePoints(players.get(i).getCards()).get(0));
 								System.out.println("Tu laimeijai, surinkai 21");
+								doDealCards = true;
 								break;
 							}
 						}
@@ -81,16 +132,46 @@ public class Dealer {
 						if (players.get(i).getCards().size() == 2) {
 							players.get(i).setPoints(getHighest(players.get(i).getCards()));
 							System.out.println("You have " + players.get(i).getPoints());
+							doDealCards = true;
 							break;
 						} else {
 							players.get(i)
 									.setPoints((new DealerBrains()).calculatePoints(players.get(i).getCards()).get(0));
 							System.out.println("You have " + players.get(i).getPoints());
+							doDealCards = true;
 							break;
 						}
 					} else {
 						System.out.println("Tokios komandos nera");
 					}
+				}
+			}
+
+		}
+		if (doDealCards) {
+			while (true) {
+				System.out.println("Dealer cards are:" + Arrays.toString(cards.toArray()) + " tai yra: "
+						+ (new DealerBrains().calculatePoints(cards)));
+				if (Collections.max((new DealerBrains().calculatePoints(cards))) >= 16
+						&& Collections.max(new DealerBrains().calculatePoints(cards)) < 22) {
+					System.out.println("Dealer has: " + Collections.max((new DealerBrains().calculatePoints(cards))));
+					dealerPoints = Collections.max((new DealerBrains().calculatePoints(cards)));
+					break;
+				} else if (Collections.max((new DealerBrains().calculatePoints(cards))) > 21
+						&& Collections.min(new DealerBrains().calculatePoints(cards)) >= 16
+						&& Collections.min(new DealerBrains().calculatePoints(cards)) < 22) {
+					System.out.println("Dealer has: " + Collections.min((new DealerBrains().calculatePoints(cards))));
+					dealerPoints = Collections.min((new DealerBrains().calculatePoints(cards)));
+					break;
+				} else if (Collections.max((new DealerBrains().calculatePoints(cards))) > 21
+						&& Collections.min(new DealerBrains().calculatePoints(cards)) > 21) {
+					status = true;
+					System.out.println("Dealer got more than 21 and lost:"
+							+ Collections.min(new DealerBrains().calculatePoints(cards)));
+					break;
+				} else {
+					cards.add(newInstance.getACard());
+					continue;
 				}
 			}
 
@@ -109,10 +190,6 @@ public class Dealer {
 			this.players.add(new Player(userInput.next()));
 		}
 
-	}
-
-	private boolean checkGameConditions() {
-		return true;
 	}
 
 	private void showPlayersStats() {

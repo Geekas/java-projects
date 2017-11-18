@@ -13,6 +13,11 @@ public class Player {
 	public void setPoints(int points){
 		this.points = points;
 	}
+	public void resetPlayer(){
+		points = 0;
+		status = false;
+		cards.clear();
+	}
 	public Player(String name) {
 		this.name = name;
 		account = new Account(100);
