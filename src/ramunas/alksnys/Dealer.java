@@ -8,12 +8,14 @@ import java.util.Scanner;
 
 public class Dealer extends Casino_human_temp{
 	private Scanner userInput;
+	private PointsCalcul points_calcul;
 	private CardLog newInstance;
 	private List<Player> players;
 	private boolean doDealCards;
 
 	public Dealer(String name) {
 		super(name);
+		points_calcul = new PointsCalcul();
 		userInput = new Scanner(System.in);
 		newInstance = CardLog.getInstance();
 		addNullsToDealerCards();
@@ -49,9 +51,7 @@ public class Dealer extends Casino_human_temp{
 	public void reset() {
 		points = 0;
 		status = false;
-		cards.clear();
 		addNullsToDealerCards();
-
 	}
 
 	private void findTheWinners() {
@@ -93,11 +93,11 @@ public class Dealer extends Casino_human_temp{
 				System.out.println("Players " + players.get(i).getName() + " cards are"
 						+ Arrays.toString(players.get(i).getCards().toArray()));
 				System.out.println("You have "
-						+ Arrays.toString((new DealerBrains()).calculatePoints(players.get(i).getCards()).toArray()));
+						+ Arrays.toString(points_calcul.calculatePoints(players.get(i).getCards()).toArray()));
 				while (true) {
-					if ((new DealerBrains()).calculatePoints(players.get(i).getCards()).get(0) == 21) {
+					if (points_calcul.calculatePoints(players.get(i).getCards()).get(0) == 21) {
 						players.get(i)
-								.setPoints((new DealerBrains()).calculatePoints(players.get(i).getCards()).get(0));
+								.setPoints(points_calcul.calculatePoints(players.get(i).getCards()).get(0));
 						System.out.println("Tu laimejai, surinkai 21");
 						break;
 					}
@@ -107,20 +107,20 @@ public class Dealer extends Casino_human_temp{
 
 						players.get(i).addCard(newInstance.getACard());
 						System.out.println(
-								"You got: " + players.get(i).getCards().get(players.get(i).getCards().size() - 1));
+								"You got: " + players.get(i).getCards().get(players.get(i).getCards().size()-1));
 						System.out.println("You have " + Arrays
-								.toString((new DealerBrains()).calculatePoints(players.get(i).getCards()).toArray()));
-						if ((new DealerBrains()).calculatePoints(players.get(i).getCards()).size() == 2) {
+								.toString(points_calcul.calculatePoints(players.get(i).getCards()).toArray()));
+						if (points_calcul.calculatePoints(players.get(i).getCards()).size() == 2) {
 							continue;
 						} else {
-							if ((new DealerBrains()).calculatePoints(players.get(i).getCards()).get(0) > 21) {
+							if (points_calcul.calculatePoints(players.get(i).getCards()).get(0) > 21) {
 								players.get(i).setStatus(true);
 								System.out.println("You have lost, yout got more than 21 points: "
-										+ (new DealerBrains()).calculatePoints(players.get(i).getCards()).get(0));
+										+ (new PointsCalcul()).calculatePoints(players.get(i).getCards()).get(0));
 								break;
-							} else if ((new DealerBrains()).calculatePoints(players.get(i).getCards()).get(0) == 21) {
+							} else if (points_calcul.calculatePoints(players.get(i).getCards()).get(0) == 21) {
 								players.get(i).setPoints(
-										(new DealerBrains()).calculatePoints(players.get(i).getCards()).get(0));
+										(new PointsCalcul()).calculatePoints(players.get(i).getCards()).get(0));
 								System.out.println("Tu laimeijai, surinkai 21");
 								doDealCards = true;
 								break;
@@ -134,7 +134,7 @@ public class Dealer extends Casino_human_temp{
 							break;
 						} else {
 							players.get(i)
-									.setPoints((new DealerBrains()).calculatePoints(players.get(i).getCards()).get(0));
+									.setPoints(points_calcul.calculatePoints(players.get(i).getCards()).get(0));
 							System.out.println("You have " + players.get(i).getPoints());
 							doDealCards = true;
 							break;
@@ -149,25 +149,25 @@ public class Dealer extends Casino_human_temp{
 		if (doDealCards) {
 			while (true) {
 				System.out.println("Dealer cards are:" + Arrays.toString(getCards().toArray()) + " tai yra: "
-						+ (new DealerBrains().calculatePoints(getCards())));
-				if (Collections.max((new DealerBrains().calculatePoints(getCards()))) >= 16
-						&& Collections.max(new DealerBrains().calculatePoints(getCards())) < 22) {
+						+ (new PointsCalcul().calculatePoints(getCards())));
+				if (Collections.max((new PointsCalcul().calculatePoints(getCards()))) >= 16
+						&& Collections.max(new PointsCalcul().calculatePoints(getCards())) < 22) {
 					System.out.println(
-							"Dealer has: " + Collections.max((new DealerBrains().calculatePoints(getCards()))));
-					points = Collections.max((new DealerBrains().calculatePoints(getCards())));
+							"Dealer has: " + Collections.max((new PointsCalcul().calculatePoints(getCards()))));
+					points = Collections.max((new PointsCalcul().calculatePoints(getCards())));
 					break;
-				} else if (Collections.max((new DealerBrains().calculatePoints(getCards()))) > 21
-						&& Collections.min(new DealerBrains().calculatePoints(getCards())) >= 16
-						&& Collections.min(new DealerBrains().calculatePoints(getCards())) < 22) {
+				} else if (Collections.max((new PointsCalcul().calculatePoints(getCards()))) > 21
+						&& Collections.min(new PointsCalcul().calculatePoints(getCards())) >= 16
+						&& Collections.min(new PointsCalcul().calculatePoints(getCards())) < 22) {
 					System.out.println(
-							"Dealer has: " + Collections.min((new DealerBrains().calculatePoints(getCards()))));
-					points = Collections.min((new DealerBrains().calculatePoints(getCards())));
+							"Dealer has: " + Collections.min((new PointsCalcul().calculatePoints(getCards()))));
+					points = Collections.min((new PointsCalcul().calculatePoints(getCards())));
 					break;
-				} else if (Collections.max((new DealerBrains().calculatePoints(getCards()))) > 21
-						&& Collections.min(new DealerBrains().calculatePoints(getCards())) > 21) {
+				} else if (Collections.max((new PointsCalcul().calculatePoints(getCards()))) > 21
+						&& Collections.min(new PointsCalcul().calculatePoints(getCards())) > 21) {
 					status = true;
 					System.out.println("Dealer got more than 21 and lost:"
-							+ Collections.min(new DealerBrains().calculatePoints(getCards())));
+							+ Collections.min(new PointsCalcul().calculatePoints(getCards())));
 					break;
 				} else {
 					addCard(newInstance.getACard());
@@ -180,7 +180,7 @@ public class Dealer extends Casino_human_temp{
 	}
 
 	private int getHighest(List<String> cards2) {
-		return Collections.max((new DealerBrains()).calculatePoints(cards2));
+		return Collections.max(points_calcul.calculatePoints(cards2));
 	}
 
 	private void createPlayerList(int players) {

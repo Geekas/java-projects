@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class DealerBrains {
+public class PointsCalcul {
 	private List<Integer> points = new ArrayList<>();
 	private boolean overLoad = false;
 	private String[] cards = { "2h", "2", "2c", "2", "2s", "2", "2d", "2", "3h", "3", "3c", "3", "3s", "3", "3d", "3",
@@ -19,6 +19,7 @@ public class DealerBrains {
 	private LinkedList<String> cardListValues = new LinkedList<String>(Arrays.asList(cards));
 
 	public List<Integer> calculatePoints(List<String> cards) {
+		points.clear();
 		if (doesContainA(cards)) {
 			for (String card : cards) {
 				if (points.isEmpty()) {
