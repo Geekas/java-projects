@@ -19,7 +19,6 @@ public class PointsCalcul {
 	private LinkedList<String> cardListValues = new LinkedList<String>(Arrays.asList(cards));
 
 	public List<Integer> calculatePoints(List<String> cards) {
-		points.clear();
 		if (doesContainA(cards)) {
 			for (String card : cards) {
 				if (points.isEmpty()) {
