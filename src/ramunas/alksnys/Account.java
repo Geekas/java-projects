@@ -18,14 +18,15 @@ public class Account {
 			System.out.println("Negalima deti neigiamu zenklu");
 		}
 	}
-public void discmountMoney(double suma){
-	if (suma > 0){
-		this.suma -= suma;
+
+	public void discmountMoney(double suma) {
+		if (suma > 0) {
+			this.suma -= suma;
+		} else {
+			System.out.println("Galimi tik teigiami skaiciai");
+		}
 	}
-	else {
-		System.out.println("Galimi tik teigiami skaiciai");
-	}
-}
+
 	public double getBalance() {
 		return suma;
 	}

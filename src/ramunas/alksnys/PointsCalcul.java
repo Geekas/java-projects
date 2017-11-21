@@ -55,9 +55,9 @@ public class PointsCalcul {
 			}
 
 		}
-		//System.out.println("Pries: " + Arrays.toString(points.toArray()));
+		// System.out.println("Pries: " + Arrays.toString(points.toArray()));
 		checkPoints();
-		//System.out.println("Po:" + Arrays.toString(points.toArray()));
+		// System.out.println("Po:" + Arrays.toString(points.toArray()));
 		return points;
 	}
 
@@ -69,8 +69,7 @@ public class PointsCalcul {
 			} else if ((points.get(0) < 21) && (points.get(1) > 21)) {
 				points.remove(1);
 				overLoad = true;
-			}
-			else if ((points.get(0) > 21) && (points.get(1) > 21)) {
+			} else if ((points.get(0) > 21) && (points.get(1) > 21)) {
 				points.remove(Collections.max(points));
 				overLoad = true;
 			}
