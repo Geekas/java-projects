@@ -3,6 +3,7 @@ package ramunas.alksnys;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -10,6 +11,7 @@ public class Dealer extends Casino_human_temp implements TableCommander {
 	private Scanner userInput;
 	private CardLog newInstance;
 	private List<Player> players;
+	private List<Player> tempPlayers;
 	private boolean doDealCards;
 	private Winner_searcher findWinner;
 
@@ -19,6 +21,7 @@ public class Dealer extends Casino_human_temp implements TableCommander {
 		newInstance = CardLog.getInstance();
 		addNullsToDealerCards();
 		players = new ArrayList<>();
+		tempPlayers = new ArrayList<>();
 		doDealCards = false;
 	}
 
@@ -29,8 +32,11 @@ public class Dealer extends Casino_human_temp implements TableCommander {
 	public void startGame() {
 		playersRegistration();
 		while (true) {
+			playerCredentionCheck();
+			takingBets();
 			dealCards();
 			findTheWinners();
+			showStats();
 			System.out.println("Jei norite zaisti dar karta press Y, jei baigti Q");
 			String answer = userInput.next();
 			if (answer.equalsIgnoreCase("Y")) {
@@ -40,6 +46,81 @@ public class Dealer extends Casino_human_temp implements TableCommander {
 				break;
 			}
 		}
+	}
+
+	private void showStats() {
+		for (Player player: players){
+			showPlayerStatsinDetail(player);
+		}
+		
+	}
+
+	private void takingBets() {
+		for (Player player : players){
+			StringBuilder sb = new StringBuilder();
+			sb.append("Player ").append(player.getName()).append(" kiek norite statyti?");
+			System.out.println(sb);
+			try{
+			double ammount = userInput.nextDouble();
+			if (ammount > 0 && ammount <= player.getBalance()){
+				player.setBet(ammount);
+				userInput.nextLine();
+			}
+			else {
+				System.out.println("Netinkamas skaicius, del laiko trukumo jus statote minimaliai tai yra 1");
+				player.setBet(1);
+				userInput.nextLine();
+			}
+			} catch (InputMismatchException e) {
+				System.out.println("Tai nera skaicius, pagal default jus tuomet statote minimuma tai yra 1");
+				player.setBet(1);
+				userInput.nextLine();
+			}
+		}
+		
+	}
+
+	private void playerCredentionCheck() {
+		List<Player> temp = new ArrayList();
+		String choice = "";
+		for (Player player : players) {
+			if (!player.efficientAccount()) {
+				System.out.println("Do you want add money? Y/N");
+				choice = userInput.next();
+				executeChoice(player, choice);
+			}
+		}
+		players.removeAll(tempPlayers);
+	}
+
+	private void executeChoice(Player player, String choice) {
+		double ammount = 0;
+		switch (choice.toLowerCase()) {
+		case "y":
+			System.out.println("How much?");
+			userInput.nextLine();
+			try {
+				ammount = userInput.nextDouble();
+				if (ammount > 0) {
+					player.addMoney(ammount);
+					executeChoice(player, "y");
+				} else {
+					System.out.println("Negatives numbers not allowed");
+
+				}
+			} catch (InputMismatchException e) {
+				System.out.println(e.getMessage());
+			}
+			break;
+		case "n":
+			tempPlayers.add(player);
+			break;
+		default:
+			System.out.println("Tokios komandos, nera. Pagal default you pasalintas is zaidimo!!!");
+			tempPlayers.add(player);
+			break;
+		}
+
 	}
 
 	private void prepareForNewGame() {
@@ -60,6 +141,7 @@ public class Dealer extends Casino_human_temp implements TableCommander {
 		status = false;
 		doDealCards = false;
 		addNullsToDealerCards();
+		tempPlayers.clear();
 	}
 
 	private void findTheWinners() {
@@ -102,19 +184,15 @@ public class Dealer extends Casino_human_temp implements TableCommander {
 	private void dealPlayerCards(Player player) {
 		String choice = "";
 		do {
-			showPlayerCommands();
+			showHeader2();
 			choice = userInput.next();
 			switch (choice.toLowerCase()) {
 			case "imti":
 				giveCardtoPlayer(player);
 				if (player.checkIfBusted()) {
-					player.getHighestPoints();
-					player.setStatus(true);
-					showPlayerStats(player);
-					System.out.println("PRALAIMEJAI");
+					playerBusted(player);
 				} else if (player.checkIfWon()) {
-					showPlayerStats(player);
-					player.setWinStatus(true);
+					playerWon(player);
 				} else {
 					showPlayerStats(player);
 				}
@@ -129,6 +207,11 @@ public class Dealer extends Casino_human_temp implements TableCommander {
 		} while (!player.getWinStatus() && !player.getStatus()
 				&& (choice.toLowerCase().equals("imti") || !choice.toLowerCase().equals("stop")));
 
+		checkStatusAndConfirm(player, choice);
+	}
+
+	private void checkStatusAndConfirm(Player player, String choice) {
+
 		if (!player.getStatus() && choice.toLowerCase().equals("stop")) {
 			showPlayerStats(player);
 			player.getHighestPoints();
@@ -136,7 +219,18 @@ public class Dealer extends Casino_human_temp implements TableCommander {
 		} else {
 			player.getHighestPoints();
 		}
+	}
 
+	private void playerBusted(Player player) {
+		player.getHighestPoints();
+		player.setStatus(true);
+		showPlayerStats(player);
+		System.out.println("PRALAIMEJAI");
+	}
+
+	private void playerWon(Player player) {
+		showPlayerStats(player);
+		player.setWinStatus(true);
 	}
 
 	private void checkPlayerWinStatus(Player player) {
@@ -157,6 +251,10 @@ public class Dealer extends Casino_human_temp implements TableCommander {
 		System.out.println("You have " + player.calcPoints());
 
 	}
+	private void showPlayerStatsinDetail(Player player) {
+		System.out.println("Players " + player.getName() + " balance is " + player.getBalance());
+
+	}
 
 	private void giveCardtoPlayer(Player player) {
 		player.addCard(newInstance.getACard());
@@ -164,6 +262,10 @@ public class Dealer extends Casino_human_temp implements TableCommander {
 
 	private void showHeader() {
 		System.out.println("Dealer cards are:" + "X" + " " + cards.get(1));
+	}
+
+	private void showHeader2() {
+		showPlayerCommands();
 	}
 
 	private void dealerCardDealing() {

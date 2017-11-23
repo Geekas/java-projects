@@ -6,7 +6,14 @@ import java.util.List;
 
 public class Player extends Casino_human_temp implements Wallet {
 	private Account account;
+	private double bettingSum = 0;
 
+	public void setBet(double ammount){
+		bettingSum = ammount;
+	}
+	public double getBetSum(){
+		return bettingSum;
+	}
 	public Player(String name) {
 		super(name);
 		account = new Account(100);
@@ -45,6 +52,12 @@ public class Player extends Casino_human_temp implements Wallet {
 
 	public String toString() {
 		return ("Zaidejas " + name + " saskaitoje turi " + account.getBalance());
+	}
+	public boolean canBet(double ammount) {
+		return (getBalance() - ammount) >= 0;
+	}
+	public boolean efficientAccount(){
+		return getBalance() >= 1; 
 	}
 
 }
