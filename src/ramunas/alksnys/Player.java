@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Player extends Casino_human_temp implements Wallet {
+public class Player extends CasinoHumanTemp implements Wallet {
 	private Account account;
 	private double bettingSum = 0;
 
@@ -32,10 +32,10 @@ public class Player extends Casino_human_temp implements Wallet {
 	}
 
 	public void reset() {
-		points = 0;
-		win = false;
-		status = false;
-		cards.clear();
+		setPoints(0);
+		setWinStatus(false);
+		setStatus(false);
+		setClearCards();
 	}
 
 	public boolean checkIfWon() {
@@ -51,7 +51,7 @@ public class Player extends Casino_human_temp implements Wallet {
 	}
 
 	public String toString() {
-		return ("Zaidejas " + name + " saskaitoje turi " + account.getBalance());
+		return ("Zaidejas " + getName() + " saskaitoje turi " + account.getBalance());
 	}
 	public boolean canBet(double ammount) {
 		return (getBalance() - ammount) >= 0;

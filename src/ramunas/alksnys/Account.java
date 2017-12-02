@@ -7,7 +7,7 @@ public class Account {
 		if (suma > 0) {
 			this.balance = suma;
 		} else {
-			System.out.println("Prideti negalima neigiamu skaiciu.");
+			System.out.println(Consts.errorNegative);
 		}
 	}
 
@@ -15,7 +15,7 @@ public class Account {
 		if (suma > 0) {
 			this.balance += suma;
 		} else {
-			System.out.println("Negalima deti neigiamu zenklu");
+			System.out.println(Consts.errorMinus);
 		}
 	}
 
@@ -23,7 +23,7 @@ public class Account {
 		if (suma > 0) {
 			this.balance -= suma;
 		} else {
-			System.out.println("Galimi tik teigiami skaiciai");
+			System.out.println(Consts.errorPosNum);
 		}
 	}
 
